@@ -116,6 +116,7 @@ class Board:
             for ch in line:
                 print(ch, end='')
             print()
+        
 
 
 class State:
@@ -186,6 +187,38 @@ def read_from_file(filename):
 
     board = Board(pieces)
 
+    return board
+
+
+def generate_board(board_string):
+    """
+    Load initial board from a given file.
+
+    :param board_string: String of the board as input, 4x5 board with \n to separate each row.
+    :type board_string: str
+    :return: A loaded board
+    :rtype: Board
+    """
+
+    line_index = 0
+    pieces = []
+    g_found = False
+
+    lines = board_string.split('\n')
+    for l in lines:
+        for x, char in enumerate(l):
+            if char == '^':  # found vertical piece
+                pieces.append(Piece(False, False, x, line_index, 'v'))
+            elif char == '<':  # found horizontal piece
+                pieces.append(Piece(False, False, x, line_index, 'h'))
+            elif char == char_single:
+                pieces.append(Piece(False, True, x, line_index, None))
+            elif char == char_goal:
+                if g_found == False:
+                    pieces.append(Piece(True, False, x, line_index, None))
+                    g_found = True
+        line_index += 1
+    board = Board(pieces)
     return board
 
 
@@ -399,6 +432,19 @@ def astar(state):
     return None
 
 
+def solve(board_string):
+    """
+    :param board_string: String of the board as input, 4x5 board with \n to separate each row.
+    :type board_string: str
+    """
+    board = generate_board(board_string)
+    state = State(board, 0, 0)
+    result = astar(state)
+
+    return result
+
+
+
 if __name__ == "__main__":
     start_time = time.time()
     parser = argparse.ArgumentParser()
@@ -424,16 +470,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # read the board from the file
-    board = read_from_file(args.inputfile)
 
-    state = State(board, 0, 0)
+    file = open(args.inputfile, "r")
+    content = file.read()
+    file.close()
 
-    result = []
-
-    if args.algo == "astar":
-        result = astar(state)
-    elif args.algo == "dfs":
-        result = dfs(state)
+    result = solve(content)
 
     steps = []
 
