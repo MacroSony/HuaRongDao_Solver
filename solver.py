@@ -110,12 +110,19 @@ class Board:
     def display(self):
         """
         Print out the current board.
-
         """
         for i, line in enumerate(self.grid):
             for ch in line:
                 print(ch, end='')
             print()
+
+    def __str__(self):
+        board_string = ""
+        for i, line in enumerate(self.grid):
+            for ch in line:
+                board_string+= ch
+            board_string+="\n"
+        return board_string
         
 
 
