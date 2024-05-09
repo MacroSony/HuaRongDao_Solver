@@ -125,7 +125,6 @@ class Board:
         return board_string
         
 
-
 class State:
     """
     State class wrapping a Board with some extra current state information.
@@ -446,60 +445,79 @@ def solve(board_string):
     """
     board = generate_board(board_string)
     state = State(board, 0, 0)
-    result = astar(state)
+    solve_result = astar(state)
 
-    return result
+    return solve_result
 
 
-
-if __name__ == "__main__":
-    start_time = time.time()
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--inputfile",
-        type=str,
-        required=True,
-        help="The input file that contains the puzzle."
-    )
-    parser.add_argument(
-        "--outputfile",
-        type=str,
-        required=True,
-        help="The output file that contains the solution."
-    )
-    parser.add_argument(
-        "--algo",
-        type=str,
-        required=True,
-        choices=['astar', 'dfs'],
-        help="The searching algorithm."
-    )
-    args = parser.parse_args()
-
-    # read the board from the file
-
-    file = open(args.inputfile, "r")
-    content = file.read()
-    file.close()
-
-    result = solve(content)
+def get_steps(board_string):
+    solve_result = solve(board_string)
 
     steps = []
+    while solve_result.parent is not None:
+        steps.append(solve_result.board)
+        solve_result = solve_result.parent
 
-    while result.parent is not None:
-        steps.append(result.board)
-        result = result.parent
+    target = ""
 
-    target = open(args.outputfile, 'w')
-
-    count = 0
     while steps:
         step = steps.pop()
-        count += 1
         for i, line in enumerate(step.grid):
             for ch in line:
-                target.write(ch)
-            target.write('\n')
-        target.write('\n')
-    print("--- %s seconds ---" % (time.time() - start_time))
-    print(count)
+                target = target + ch
+            target = target + '\n'
+        target = target + '\n'
+    return target
+
+
+# if __name__ == "__main__":
+#     start_time = time.time()
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument(
+#         "--inputfile",
+#         type=str,
+#         required=True,
+#         help="The input file that contains the puzzle."
+#     )
+#     parser.add_argument(
+#         "--outputfile",
+#         type=str,
+#         required=True,
+#         help="The output file that contains the solution."
+#     )
+#     parser.add_argument(
+#         "--algo",
+#         type=str,
+#         required=True,
+#         choices=['astar', 'dfs'],
+#         help="The searching algorithm."
+#     )
+#     args = parser.parse_args()
+#
+#     # read the board from the file
+#
+#     file = open(args.inputfile, "r")
+#     content = file.read()
+#     file.close()
+#
+#     result = solve(content)
+#
+#     steps = []
+#
+#     while result.parent is not None:
+#         steps.append(result.board)
+#         result = result.parent
+#
+#     target = open(args.outputfile, 'w')
+#
+#     count = 0
+#     while steps:
+#         step = steps.pop()
+#         count += 1
+#         for i, line in enumerate(step.grid):
+#             for ch in line:
+#                 target.write(ch)
+#             target.write('\n')
+#         target.write('\n')
+#     print("--- %s seconds ---" % (time.time() - start_time))
+#     print(count)

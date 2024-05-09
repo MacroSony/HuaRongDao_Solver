@@ -9,9 +9,9 @@ def solve():
     board_string = request.get_json()
     if "board" not in board_string.keys():
         return "no board received", 404
-    result = solver.solve(board_string["board"])
+    result = solver.get_steps(board_string["board"])
     data = {
-        "solution": result.board.__str__()
+        "solution": result
     }
     return jsonify(data)
 
